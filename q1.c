@@ -29,18 +29,18 @@ void input()
 
 void setOrder() // n^3 == 125 operatiosn at most
 {
-    int cost[n][n];
+    long long cost[n][n];
     for (int a = 0; a < n; a++)
         cost[a][a] = 0;
     for (int len = 2; len <= n; len++)
-    {
         for (int i = 0; i < n - len + 1; i++)
         {
             int j = i + len - 1;
-            cost[i][j] = 1e9;
+            cost[i][j] = 1e18;
+            orderings[i][j] = 1e9;
             for (int k = i; k <= j - 1; k++)
             {
-                int here = cost[i][k] + cost[k + 1][j] + x[i] * y[k] * y[j];
+                long long here = cost[i][k] + cost[k + 1][j] + (long long)(x[i] * y[k] * y[j]);
                 if (here < cost[i][j])
                 {
                     cost[i][j] = here;
@@ -48,12 +48,11 @@ void setOrder() // n^3 == 125 operatiosn at most
                 }
             }
         }
-    }
 }
 
 long long **mat_mul(long long **arr1, long long **arr2, int n, int m, int k)
 {
-    long long **res = (long long **)malloc(n * sizeof(int *));
+    long long **res = (long long **)malloc(n * sizeof(long long *));
     for (int a = 0; a < n; a++)
     {
         res[a] = (long long *)malloc(k * sizeof(long long));
@@ -64,6 +63,10 @@ long long **mat_mul(long long **arr1, long long **arr2, int n, int m, int k)
         for (int c = 0; c < k; c++)
             for (int b = 0; b < m; b++)
                 res[a][c] += arr1[a][b] * arr2[b][c];
+    for (int a = 0; a < n; a++)
+        free(arr1[a]);
+    for (int b = 0; b < m; b++)
+        free(arr2[b]);
     free(arr1);
     free(arr2);
     return res;
@@ -73,6 +76,7 @@ long long **rec_mul(int i, int j)
 {
     if (i == j)
         return arr[i];
+    printf("%d %d\n", i, j);
     return mat_mul(rec_mul(i, orderings[i][j]), rec_mul(orderings[i][j] + 1, j), x[i], y[orderings[i][j]], y[j]);
 }
 

@@ -1,0 +1,1 @@
+scp $1 cs3302_31@abacus.iiit.ac.in:~/$1
