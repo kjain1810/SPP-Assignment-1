@@ -3,7 +3,7 @@
 
 int n;
 int *x, *y;
-int ***arr;
+long long ***arr;
 int **orderings;
 
 void input()
@@ -11,17 +11,17 @@ void input()
     scanf("%d", &n);
     x = (int *)malloc(n * sizeof(int));
     y = (int *)malloc(n * sizeof(int));
-    arr = (int ***)malloc(n * sizeof(int **));
+    arr = (long long ***)malloc(n * sizeof(long long **));
     orderings = (int **)malloc(n * sizeof(int *));
     for (int a = 0; a < n; a++)
     {
         scanf("%d%d", &x[a], &y[a]);
-        arr[a] = (int **)malloc(x[a] * sizeof(int *));
+        arr[a] = (long long **)malloc(x[a] * sizeof(long long *));
         for (int b = 0; b < x[a]; b++)
         {
-            arr[a][b] = (int *)malloc(y[a] * sizeof(int));
+            arr[a][b] = (long long *)malloc(y[a] * sizeof(long long));
             for (int c = 0; c < y[a]; c++)
-                scanf("%d", &arr[a][b][c]);
+                scanf("%lld", &arr[a][b][c]);
         }
         orderings[a] = (int *)malloc(n * sizeof(int));
     }
@@ -51,25 +51,25 @@ void setOrder() // n^3 == 125 operatiosn at most
     }
 }
 
-int **mat_mul(int **arr1, int **arr2, int n, int m, int k)
+long long **mat_mul(long long **arr1, long long **arr2, int n, int m, int k)
 {
-    int **res = (int **)malloc(n * sizeof(int *));
+    long long **res = (long long **)malloc(n * sizeof(int *));
     for (int a = 0; a < n; a++)
     {
-        res[a] = (int *)malloc(k * sizeof(int));
+        res[a] = (long long *)malloc(k * sizeof(long long));
         for (int b = 0; b < k; b++)
             res[a][b] = 0;
     }
     for (int a = 0; a < n; a++)
-        for (int b = 0; b < m; b++)
-            for (int c = 0; c < k; c++)
+        for (int c = 0; c < k; c++)
+            for (int b = 0; b < m; b++)
                 res[a][c] += arr1[a][b] * arr2[b][c];
     free(arr1);
     free(arr2);
     return res;
 }
 
-int **rec_mul(int i, int j)
+long long **rec_mul(int i, int j)
 {
     if (i == j)
         return arr[i];
@@ -85,18 +85,18 @@ int main()
         for (int a = 0; a < x[0]; a++)
         {
             for (int b = 0; b < y[0]; b++)
-                printf("%d ", arr[0][a][b]);
+                printf("%lld ", arr[0][a][b]);
             printf("\n");
         }
         return 0;
     }
     setOrder();
-    int **res = rec_mul(0, n - 1);
+    long long **res = rec_mul(0, n - 1);
     printf("%d %d\n", x[0], y[n - 1]);
     for (int a = 0; a < x[0]; a++)
     {
         for (int b = 0; b < y[n - 1]; b++)
-            printf("%d ", res[a][b]);
+            printf("%lld ", res[a][b]);
         printf("\n");
     }
     return 0;
