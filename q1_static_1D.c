@@ -2,28 +2,21 @@
 #include <stdlib.h>
 
 int n;
-int *x, *y;
-long long ***arr;
-int **orderings;
+int x[10], y[10];
+int orderings[5][5];
+long long arr[10 * 1000 * 1000];
+int stride = 1000 * 1000;
+int used = 5;
 
 void input()
 {
     scanf("%d", &n);
-    x = (int *)malloc(n * sizeof(int));
-    y = (int *)malloc(n * sizeof(int));
-    arr = (long long ***)malloc(n * sizeof(long long **));
-    orderings = (int **)malloc(n * sizeof(int *));
     for (int a = 0; a < n; a++)
     {
         scanf("%d%d", &x[a], &y[a]);
-        arr[a] = (long long **)malloc(x[a] * sizeof(long long *));
         for (int b = 0; b < x[a]; b++)
-        {
-            arr[a][b] = (long long *)malloc(y[a] * sizeof(long long));
             for (int c = 0; c < y[a]; c++)
-                scanf("%lld", &arr[a][b][c]);
-        }
-        orderings[a] = (int *)malloc(n * sizeof(int));
+                scanf("%lld", &arr[a * stride + b * y[a] + c]);
     }
 }
 
@@ -50,34 +43,33 @@ void setOrder() // n^3 == 125 operatiosn at most
         }
 }
 
-long long **mat_mul(long long **arr1, long long **arr2, int n, int m, int k)
+void mat_mul(int idx_arr1, int idx_arr2, int idx_ret)
 {
-    long long **res = (long long **)malloc(n * sizeof(long long *));
+    int n = x[idx_ret] = x[idx_arr1];
+    int k = y[idx_ret] = y[idx_arr2];
+    int m = y[idx_arr1];
     for (int a = 0; a < n; a++)
-    {
-        res[a] = (long long *)malloc(k * sizeof(long long));
         for (int b = 0; b < k; b++)
-            res[a][b] = 0;
-    }
+            arr[idx_ret * stride + a * k + b] = 0;
     for (int a = 0; a < n; a++)
         for (int c = 0; c < k; c++)
+        {
+            long long x = 0;
             for (int b = 0; b < m; b++)
-                res[a][c] += arr1[a][b] * arr2[b][c];
-    for (int a = 0; a < n; a++)
-        free(arr1[a]);
-    for (int b = 0; b < m; b++)
-        free(arr2[b]);
-    free(arr1);
-    free(arr2);
-    return res;
+                x += arr[idx_arr1 * stride + a * m + b] * arr[idx_arr2 * stride + b * k + c];
+            arr[idx_ret * stride + a * k + c] = x;
+        }
 }
 
-long long **rec_mul(int i, int j)
+int rec_mul(int i, int j)
 {
     if (i == j)
-        return arr[i];
- //   printf("%d %d\n", i, j);
-    return mat_mul(rec_mul(i, orderings[i][j]), rec_mul(orderings[i][j] + 1, j), x[i], y[orderings[i][j]], y[j]);
+        return i;
+    int ret = used++;
+    int arr1 = rec_mul(i, orderings[i][j]);
+    int arr2 = rec_mul(orderings[i][j] + 1, j);
+    mat_mul(arr1, arr2, ret);
+    return ret;
 }
 
 int main()
@@ -89,18 +81,18 @@ int main()
         for (int a = 0; a < x[0]; a++)
         {
             for (int b = 0; b < y[0]; b++)
-                printf("%lld ", arr[0][a][b]);
+                printf("%lld ", arr[a * y[0] + b]);
             printf("\n");
         }
         return 0;
     }
     setOrder();
-    long long **res = rec_mul(0, n - 1);
-    printf("%d %d\n", x[0], y[n - 1]);
-    for (int a = 0; a < x[0]; a++)
+    int idx = rec_mul(0, n - 1);
+    printf("%d %d\n", x[idx], y[idx]);
+    for (int a = 0; a < x[idx]; a++)
     {
-        for (int b = 0; b < y[n - 1]; b++)
-            printf("%lld ", res[a][b]);
+        for (int b = 0; b < y[idx]; b++)
+            printf("%lld ", arr[idx * stride + a * y[idx] + b]);
         printf("\n");
     }
     return 0;
