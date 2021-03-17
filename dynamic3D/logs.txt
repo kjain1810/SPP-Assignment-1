@@ -1,0 +1,21 @@
+Running 0
+27.824283
+Running 1
+26.886832
+Running 2
+27.289217
+Running 3
+28.687501
+Running 4
+28.147654
+Running 5
+28.360714
+Running 6
+28.344585
+Running 7
+27.970654
+Running 8
+28.156836
+Running 9
+27.440011
+

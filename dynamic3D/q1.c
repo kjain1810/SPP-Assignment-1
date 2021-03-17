@@ -76,7 +76,7 @@ long long **rec_mul(int i, int j)
 {
     if (i == j)
         return arr[i];
- //   printf("%d %d\n", i, j);
+    printf("%d %d\n", i, j);
     return mat_mul(rec_mul(i, orderings[i][j]), rec_mul(orderings[i][j] + 1, j), x[i], y[orderings[i][j]], y[j]);
 }
 
