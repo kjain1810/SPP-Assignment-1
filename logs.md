@@ -8,3 +8,6 @@
 | Static 1D arrays  | 11.2    | 7.7%         |
 | Dynamic 1D arrays | 11.1    |              |
 
+## Notes
+
+1. Freeing memory helps runtime, probably because it reduces cache misses
