@@ -1,21 +1,30 @@
 Running 0
-8.418155
+./run <cases_q1/0.in >cases_q1/0.out
+14.437405
 Running 1
-8.426605
+./run <cases_q1/1.in >cases_q1/0.out
+9.928382
 Running 2
-8.266227
+./run <cases_q1/2.in >cases_q1/0.out
+13.288003
 Running 3
-8.276876
+./run <cases_q1/3.in >cases_q1/0.out
+11.893798
 Running 4
-8.268365
+./run <cases_q1/4.in >cases_q1/0.out
+12.355247
 Running 5
-8.248475
+./run <cases_q1/5.in >cases_q1/0.out
+10.735228
 Running 6
-8.260013
+./run <cases_q1/6.in >cases_q1/0.out
+10.070841
 Running 7
-8.240199
+./run <cases_q1/7.in >cases_q1/0.out
+14.901376
 Running 8
-8.283100
+./run <cases_q1/8.in >cases_q1/0.out
+12.007903
 Running 9
-8.254308
-
+./run <cases_q1/9.in >cases_q1/0.out
+12.167070
