@@ -46,8 +46,8 @@ void FW()
 {
     for (int a = 0; a < E; a++)
         dist[edges[a][0]][edges[a][1]] = min(dist[edges[a][0]][edges[a][1]], edges[a][2]);
-    for (int i = 0; i < V; i++)
-        for (int k = 0; k < V; k++)
+    for (int k = 0; k < V; k++)
+        for (int i = 0; i < V; i++)
             for (int j = 0; j < V; j++)
                 dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
 }
