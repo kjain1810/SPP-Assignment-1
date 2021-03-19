@@ -68,9 +68,9 @@ void matmul_loops(long long *arr1, long long *arr2, long long *res, int n, int m
                         for (int b2 = 0; b2 < stride && b1 + b2 < m; b2++)
                             x += arr1[(a1 + a2) * m + b1 + b2] * arr2[(b1 + b2) + (c1 + c2) * m];
                         if (direction == 0)
-                            res[(a1 + a2) * k + c1 + c2] = x;
+                            res[(a1 + a2) * k + c1 + c2] += x;
                         else
-                            res[a1 + a2 + (c1 + c2) * n] = x;
+                            res[a1 + a2 + (c1 + c2) * n] += x;
                     }
 }
 
