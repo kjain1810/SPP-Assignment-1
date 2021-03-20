@@ -42,7 +42,7 @@ void setOrder() // n^3 == 125 operatiosn at most
         }
 }
 
-void mat_mul(int idx_arr1, int idx_arr2, int idx_ret)
+void mat_mul(int idx_arr1, int idx_arr2, int idx_ret, int direction)
 {
     int n = x[idx_ret] = x[idx_arr1];
     int k = y[idx_ret] = y[idx_arr2];
@@ -50,24 +50,39 @@ void mat_mul(int idx_arr1, int idx_arr2, int idx_ret)
     for (int a = 0; a < n; a++)
         for (int b = 0; b < k; b++)
             arr[idx_ret][a * k + b] = 0;
-    for (int a = 0; a < n; a++)
-        for (int c = 0; c < k; c++)
+    for (int c = 0; c < k; c++)
+        for (int a = 0; a < n; a++)
         {
             long long x = 0;
             for (int b = 0; b < m; b++)
-                x += arr[idx_arr1][a * m + b] * arr[idx_arr2][b * k + c];
-            arr[idx_ret][a * k + c] = x;
+                x += arr[idx_arr1][a * m + b] * arr[idx_arr2][b + c * m];
+            if (direction == 0)
+                arr[idx_ret][a * k + c] += x;
+            else
+                arr[idx_ret][a + n * c] += x;
         }
 }
 
-int rec_mul(int i, int j)
+int rec_mul(int i, int j, int direction)
 {
     if (i == j)
+    {
+        if (direction == 1)
+        {
+            for (int a = 0; a < x[i]; a++)
+                for (int b = a + 1; b < y[i]; b++)
+                {
+                    long long xx = arr[i][a * y[i] + b];
+                    arr[i][a * y[i] + b] = arr[i][a + b * x[i]];
+                    arr[i][a + b * x[i]] = xx;
+                }
+        }
         return i;
+    }
     int ret = used++;
-    int arr1 = rec_mul(i, orderings[i][j]);
-    int arr2 = rec_mul(orderings[i][j] + 1, j);
-    mat_mul(arr1, arr2, ret);
+    int arr1 = rec_mul(i, orderings[i][j], 0);
+    int arr2 = rec_mul(orderings[i][j] + 1, j, 1);
+    mat_mul(arr1, arr2, ret, direction);
     return ret;
 }
 
@@ -86,7 +101,7 @@ int main()
         return 0;
     }
     setOrder();
-    int idx = rec_mul(0, n - 1);
+    int idx = rec_mul(0, n - 1, 0);
     printf("%d %d\n", x[idx], y[idx]);
     for (int a = 0; a < x[idx]; a++)
     {

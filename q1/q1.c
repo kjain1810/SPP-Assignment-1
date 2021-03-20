@@ -2,30 +2,20 @@
 #include <stdlib.h>
 
 int n;
-int *x, *y;
-int **orderings;
-
-long long **colarr;
-
-int stride = 32;
+int x[10], y[10];
+int orderings[5][5];
+long long arr[10][1000 * 1000];
+int used = 5;
 
 void input()
 {
     scanf("%d", &n);
-    x = (int *)malloc(n * sizeof(int));
-    y = (int *)malloc(n * sizeof(int));
-    colarr = (long long **)malloc(n * sizeof(long long *));
-    orderings = (int **)malloc(n * sizeof(int *));
     for (int a = 0; a < n; a++)
     {
         scanf("%d%d", &x[a], &y[a]);
-        colarr[a] = (long long *)malloc(x[a] * y[a] * sizeof(long long));
         for (int b = 0; b < x[a]; b++)
-        {
             for (int c = 0; c < y[a]; c++)
-                scanf("%lld", &colarr[a][y[a] * b + c]);
-        }
-        orderings[a] = (int *)malloc(n * sizeof(int));
+                scanf("%lld", &arr[a][b * y[a] + c]);
     }
 }
 
@@ -52,41 +42,28 @@ void setOrder() // n^3 == 125 operatiosn at most
         }
 }
 
-void matmul_loops(long long *arr1, long long *arr2, long long *res, int n, int m, int k, int direction)
+void mat_mul(int idx_arr1, int idx_arr2, int idx_ret, int direction)
 {
-    /* 
-    if direction is 0, the result matrix has to the left matrix --> requires row major (currently implemented)
-    else, it is the right matrix and requires column major 
-    */
-    for (int c1 = 0; c1 < k; c1 += stride)
-        for (int a1 = 0; a1 < n; a1 += stride)
-            for (int b1 = 0; b1 < m; b1 += stride)
-                for (int c2 = 0; c2 < stride && c1 + c2 < k; c2++)
-                    for (int a2 = 0; a2 < stride && a1 + a2 < n; a2++)
-                    {
-                        long long x = 0;
-                        for (int b2 = 0; b2 < stride && b1 + b2 < m; b2++)
-                            x += arr1[(a1 + a2) * m + b1 + b2] * arr2[(b1 + b2) + (c1 + c2) * m];
-                        if (direction == 0)
-                            res[(a1 + a2) * k + c1 + c2] = x;
-                        else
-                            res[a1 + a2 + (c1 + c2) * n] = x;
-                    }
-}
-
-long long *mat_mul(long long *arr1, long long *arr2, int n, int m, int k, int direction)
-{
-    long long *res = (long long *)malloc(n * k * sizeof(long long));
+    int n = x[idx_ret] = x[idx_arr1];
+    int k = y[idx_ret] = y[idx_arr2];
+    int m = y[idx_arr1];
     for (int a = 0; a < n; a++)
         for (int b = 0; b < k; b++)
-            res[a * k + b] = 0;
-    matmul_loops(arr1, arr2, res, n, m, k, direction);
-    free(arr1);
-    free(arr2);
-    return res;
+            arr[idx_ret][a * k + b] = 0;
+    for (int a = 0; a < n; a++)
+        for (int c = 0; c < k; c++)
+        {
+            long long x = 0;
+            for (int b = 0; b < m; b++)
+                x += arr[idx_arr1][a * m + b] * arr[idx_arr2][b + c * m];
+            if (direction == 0)
+                arr[idx_ret][a * k + c] += x;
+            else
+                arr[idx_ret][a + n * c] += x;
+        }
 }
 
-long long *rec_mul(int i, int j, int direction) // direction = 0 --> left matrix
+int rec_mul(int i, int j, int direction)
 {
     if (i == j)
     {
@@ -95,14 +72,18 @@ long long *rec_mul(int i, int j, int direction) // direction = 0 --> left matrix
             for (int a = 0; a < x[i]; a++)
                 for (int b = a + 1; b < y[i]; b++)
                 {
-                    long long xx = colarr[i][a * y[i] + b];
-                    colarr[i][a * y[i] + b] = colarr[i][a + b * x[i]];
-                    colarr[i][a + b * x[i]] = xx;
+                    long long xx = arr[i][a * y[i] + b];
+                    arr[i][a * y[i] + b] = arr[i][a + b * x[i]];
+                    arr[i][a + b * x[i]] = xx;
                 }
         }
-        return colarr[i];
+        return i;
     }
-    return mat_mul(rec_mul(i, orderings[i][j], 0), rec_mul(orderings[i][j] + 1, j, 1), x[i], y[orderings[i][j]], y[j], direction);
+    int ret = used++;
+    int arr1 = rec_mul(i, orderings[i][j], 0);
+    int arr2 = rec_mul(orderings[i][j] + 1, j, 1);
+    mat_mul(arr1, arr2, ret, direction);
+    return ret;
 }
 
 int main()
@@ -114,18 +95,18 @@ int main()
         for (int a = 0; a < x[0]; a++)
         {
             for (int b = 0; b < y[0]; b++)
-                printf("%lld ", colarr[0][x[0] * a + b]);
+                printf("%lld ", arr[0][a * y[0] + b]);
             printf("\n");
         }
         return 0;
     }
     setOrder();
-    long long *res = rec_mul(0, n - 1, 0);
-    printf("%d %d\n", x[0], y[n - 1]);
-    for (int a = 0; a < x[0]; a++)
+    int idx = rec_mul(0, n - 1, 0);
+    printf("%d %d\n", x[idx], y[idx]);
+    for (int a = 0; a < x[idx]; a++)
     {
-        for (int b = 0; b < y[n - 1]; b++)
-            printf("%lld ", res[a * y[n - 1] + b]);
+        for (int b = 0; b < y[idx]; b++)
+            printf("%lld ", arr[idx][a * y[idx] + b]);
         printf("\n");
     }
     return 0;
