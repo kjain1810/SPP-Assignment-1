@@ -4,7 +4,7 @@
 int n;
 int x[10], y[10];
 int orderings[5][5];
-long long arr[10 * 1000 * 1000];
+volatile long long arr[10 * 1000 * 1000];
 int stride = 1000 * 1000;
 int used = 5;
 

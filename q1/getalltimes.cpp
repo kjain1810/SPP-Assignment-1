@@ -15,6 +15,7 @@ int main(int argc, char **argv)
     std::string diffx = "diff ./Q1out/";
     std::string diffy = ".txt ./myout/";
     std::string diffz = ".out | wc -l";
+    double total = 0;
     for (int a = 0; a < 15; a++)
     {
         struct timespec start, stop;
@@ -39,6 +40,8 @@ int main(int argc, char **argv)
                   << accum << "\n";
         command = diffx + cases[a] + diffy + cases[a] + diffz;
         system(command.c_str());
+    	total += accum;
     }
+    std::cout<<"Total: " << total<<"\n";
     return 0;
 }

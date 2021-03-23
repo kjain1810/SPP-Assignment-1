@@ -2,9 +2,9 @@
 #include <stdlib.h>
 
 int n;
-int x[10], y[10];
+int x[15], y[15];
 int orderings[5][5];
-long long arr[10][1000 * 1000];
+long long arr[15][1000 * 1000];
 int used = 5;
 
 void input()
@@ -44,18 +44,23 @@ void setOrder() // n^3 == 125 operatiosn at most
 
 void mat_mul(int idx_arr1, int idx_arr2, int idx_ret, int direction)
 {
-    int n = x[idx_ret] = x[idx_arr1];
-    int k = y[idx_ret] = y[idx_arr2];
-    int m = y[idx_arr1];
+    register int n = x[idx_ret] = x[idx_arr1];
+    register int k = y[idx_ret] = y[idx_arr2];
+    register int m = y[idx_arr1];
     for (int a = 0; a < n; a++)
         for (int b = 0; b < k; b++)
             arr[idx_ret][a * k + b] = 0;
     for (int c = 0; c < k; c++)
         for (int a = 0; a < n; a++)
         {
-            long long x = 0;
-            for (int b = 0; b < m; b++)
+            register long long x = 0;
+            int b = m;
+            while (--b)
                 x += arr[idx_arr1][a * m + b] * arr[idx_arr2][b + c * m];
+            x += arr[idx_arr1][a * m + b] * arr[idx_arr2][b + c * m];
+
+            // for (int b = 0; b < m; b++)
+            //     x += arr[idx_arr1][a * m + b] * arr[idx_arr2][b + c * m];
             if (direction == 0)
                 arr[idx_ret][a * k + c] += x;
             else
@@ -67,17 +72,17 @@ int rec_mul(int i, int j, int direction)
 {
     if (i == j)
     {
+        int here = i;
         if (direction == 1)
         {
+            here = used++;
+            x[here] = x[i];
+            y[here] = y[i];
             for (int a = 0; a < x[i]; a++)
-                for (int b = a + 1; b < y[i]; b++)
-                {
-                    long long xx = arr[i][a * y[i] + b];
-                    arr[i][a * y[i] + b] = arr[i][a + b * x[i]];
-                    arr[i][a + b * x[i]] = xx;
-                }
+                for (int b = 0; b < y[i]; b++)
+                    arr[here][b * x[i] + a] = arr[i][a * y[i] + b];
         }
-        return i;
+        return here;
     }
     int ret = used++;
     int arr1 = rec_mul(i, orderings[i][j], 0);
