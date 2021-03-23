@@ -4,7 +4,7 @@
 int n;
 int x[15], y[15];
 int orderings[5][5];
-long long arr[15][1000 * 1000];
+long long arr[15][1000 * 1000], cost[5][5];
 int used = 5;
 
 void input()
@@ -21,9 +21,6 @@ void input()
 
 void setOrder() // n^3 == 125 operatiosn at most
 {
-    long long cost[n][n];
-    for (int a = 0; a < n; a++)
-        cost[a][a] = 0;
     for (int len = 2; len <= n; len++)
         for (int i = 0; i < n - len + 1; i++)
         {
@@ -47,20 +44,14 @@ void mat_mul(int idx_arr1, int idx_arr2, int idx_ret, int direction)
     register int n = x[idx_ret] = x[idx_arr1];
     register int k = y[idx_ret] = y[idx_arr2];
     register int m = y[idx_arr1];
-    for (int a = 0; a < n; a++)
-        for (int b = 0; b < k; b++)
-            arr[idx_ret][a * k + b] = 0;
     for (int c = 0; c < k; c++)
         for (int a = 0; a < n; a++)
         {
             register long long x = 0;
-            int b = m;
+            register int b = m;
             while (--b)
                 x += arr[idx_arr1][a * m + b] * arr[idx_arr2][b + c * m];
             x += arr[idx_arr1][a * m + b] * arr[idx_arr2][b + c * m];
-
-            // for (int b = 0; b < m; b++)
-            //     x += arr[idx_arr1][a * m + b] * arr[idx_arr2][b + c * m];
             if (direction == 0)
                 arr[idx_ret][a * k + c] += x;
             else

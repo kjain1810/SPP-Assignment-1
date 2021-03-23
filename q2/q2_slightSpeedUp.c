@@ -1,19 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int min(int i, int j)
-{
-    if (i < j)
-        return i;
-    return j;
-}
-
-int max(int i, int j)
-{
-    if (i > j)
-        return i;
-    return j;
-}
+#define min(a, b) (a > b ? b : a)
 
 const int inf = 1e9;
 
@@ -43,8 +31,9 @@ void FW()
         for (int i = 0; i < V; i++)
         {
             int x = dist[i * V + k];
-            for (int j = 0; j < V; j++)
-                dist[i * V + j] = min(dist[i * V + j], x + dist[k * V + j]);
+            if (x < inf)
+                for (int j = 0; j < V; j++)
+                    dist[i * V + j] = min(dist[i * V + j], x + dist[k * V + j]);
         }
 }
 
