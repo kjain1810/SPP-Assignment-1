@@ -27,14 +27,22 @@ void getinput()
 
 void FW()
 {
-    for (int k = 0; k < V; k++)
-        for (int i = 0; i < V; i++)
+    for (register int k = 0; k < V; k++)
+    {
+        register int vk = k * V;
+        for (register int i = 0; i < V; i++)
         {
-            int x = dist[i * V + k];
+            register int vi = i * V;
+            register int x = dist[vi + k];
             if (x < inf)
-                for (int j = 0; j < V; j++)
-                    dist[i * V + j] = min(dist[i * V + j], x + dist[k * V + j]);
+            {
+                register int j = V;
+                while (--j)
+                    dist[vi + j] = min(dist[vi + j], x + dist[vk + j]);
+                dist[vi + j] = min(dist[vi + j], x + dist[vk + j]);
+            }
         }
+    }
 }
 
 int main()
@@ -43,8 +51,9 @@ int main()
     FW();
     for (int a = 0; a < V; a++)
     {
-        for (int b = 0; b < V; b++)
-            printf("%d ", dist[a * V + b] < inf ? dist[a * V + b] : -1);
+        register int AV = a * V;
+        for (register int b = 0; b < V; b++)
+            printf("%d ", dist[AV + b] < inf ? dist[AV + b] : -1);
         printf("\n");
     }
     return 0;

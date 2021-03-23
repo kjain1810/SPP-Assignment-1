@@ -1,19 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-int min(int i, int j)
-{
-    if (i < j)
-        return i;
-    return j;
-}
-
-int max(int i, int j)
-{
-    if (i > j)
-        return i;
-    return j;
-}
+#define min(a, b) (a > b ? b : a)
 
 const int inf = 1e9;
 
@@ -46,10 +33,10 @@ void getinput()
 
 void FWI(int **A, int **B, int **C, int n)
 {
-    for (int a = 0; a < n; a++)
-        for (int c = 0; c < n; c++)
+    for (register int c = 0; c < n; c++)
+        for (register int a = 0; a < n; a++)
             if (B[a][c] < inf)
-                for (int b = 0; b < n; b++)
+                for (register int b = 0; b < n; b++)
                     A[a][b] = min(A[a][b], B[a][c] + C[c][b]);
 }
 
