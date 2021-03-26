@@ -2,9 +2,9 @@
 #include <stdlib.h>
 
 int n;
-int x[10], y[10];
+int x[15], y[15];
 int orderings[5][5];
-long long arr[10][1000 * 1000];
+long long arr[15][1000 * 1000];
 int used = 5;
 
 void input()
@@ -67,17 +67,17 @@ int rec_mul(int i, int j, int direction)
 {
     if (i == j)
     {
+        int here = i;
         if (direction == 1)
         {
+            here = used++;
+            x[here] = x[i];
+            y[here] = y[i];
             for (int a = 0; a < x[i]; a++)
-                for (int b = a + 1; b < y[i]; b++)
-                {
-                    long long xx = arr[i][a * y[i] + b];
-                    arr[i][a * y[i] + b] = arr[i][a + b * x[i]];
-                    arr[i][a + b * x[i]] = xx;
-                }
+                for (int b = 0; b < y[i]; b++)
+                    arr[here][b * x[i] + a] = arr[i][a * y[i] + b];
         }
-        return i;
+        return here;
     }
     int ret = used++;
     int arr1 = rec_mul(i, orderings[i][j], 0);

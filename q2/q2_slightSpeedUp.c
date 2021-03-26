@@ -27,20 +27,34 @@ void getinput()
 
 void FW()
 {
-    for (register int k = 0; k < V; k++)
+    register int j, vi, vk, x;
+    int i, k;
+    for (k = 0; k < V; k++)
     {
-        register int vk = k * V;
-        for (register int i = 0; i < V; i++)
+        vk = k * V;
+        i = V;
+        while (--i)
         {
-            register int vi = i * V;
-            register int x = dist[vi + k];
+            if (i == k)
+                continue;
+            vi = i * V;
+            x = dist[vi + k];
             if (x < inf)
             {
-                register int j = V;
+                j = V;
                 while (--j)
                     dist[vi + j] = min(dist[vi + j], x + dist[vk + j]);
                 dist[vi + j] = min(dist[vi + j], x + dist[vk + j]);
             }
+        }
+        vi = i * V;
+        x = dist[vi + k];
+        if (x < inf)
+        {
+            j = V;
+            while (--j)
+                dist[vi + j] = min(dist[vi + j], x + dist[vk + j]);
+            dist[vi + j] = min(dist[vi + j], x + dist[vk + j]);
         }
     }
 }

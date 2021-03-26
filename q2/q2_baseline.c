@@ -8,13 +8,6 @@ int min(int i, int j)
     return j;
 }
 
-int max(int i, int j)
-{
-    if (i > j)
-        return i;
-    return j;
-}
-
 const int inf = 1e9;
 
 int V, E;

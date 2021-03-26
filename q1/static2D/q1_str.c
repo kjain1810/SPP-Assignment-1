@@ -6,7 +6,7 @@ int x[15], y[15];
 int orderings[5][5];
 long long arr[15][1000 * 1000], cost[5][5];
 int used = 5;
-
+int stride = 64;
 void input()
 {
     scanf("%d", &n);
@@ -14,11 +14,8 @@ void input()
     {
         scanf("%d%d", &x[a], &y[a]);
         for (int b = 0; b < x[a]; b++)
-        {
-            register int BY = b * y[a];
-            for (register int c = 0; c < y[a]; c++)
-                scanf("%lld", &arr[a][BY + c]);
-        }
+            for (int c = 0; c < y[a]; c++)
+                scanf("%lld", &arr[a][b * y[a] + c]);
     }
 }
 
@@ -52,11 +49,10 @@ int rec_mul(int i, int j, int direction)
             here = used++;
             x[here] = x[i];
             y[here] = y[i];
-            register int a, b, AY;
-            for (a = 0; a < x[i]; a++)
+            for (register int a = 0; a < x[i]; a++)
             {
-                AY = a * y[i];
-                for (b = 0; b < y[i]; b++)
+                register int AY = a * y[i];
+                for (register int b = 0; b < y[i]; b++)
                     arr[here][b * x[i] + a] = arr[i][AY + b];
             }
         }
@@ -73,26 +69,25 @@ int rec_mul(int i, int j, int direction)
         cmul = n;
     else
         amul = k;
-    register long long x;
-    register int b;
-    register long long *arr1 = &arr[idx_arr1][0];
-    register long long *arr2;
-    register long long *arrfinal = &arr[idx_ret][0];
-    int a, c;
-    for (a = 0; a < n; a++)
+    for (int c1 = 0; c1 < k; c1 += stride)
     {
-        arr2 = &arr[idx_arr2][0];
-        for (c = 0; c < k; c++)
+        for (int c2 = 0; c2 < stride && c1 + c2 < k; c2++)
         {
-            x = 0;
-            b = m;
-            while (--b)
-                x += arr1[b] * arr2[b];
-            x += arr1[b] * arr2[b];
-            arrfinal[a * amul + c * cmul] += x;
-            arr2 += m;
+            register int CM = (c1 + c2) * m;
+            for (int a1 = 0; a1 < n; a1 += stride)
+            {
+                for (int a2 = 0; a2 < stride && a1 + a2 < n; a2++)
+                {
+                    register int AM = (a1 + a2) * m;
+                    register long long x = 0;
+                    register int b = m;
+                    while (--b)
+                        x += arr[idx_arr1][AM + b] * arr[idx_arr2][b + CM];
+                    x += arr[idx_arr1][AM + b] * arr[idx_arr2][b + CM];
+                    arr[idx_ret][(a1 + a2) * amul + (c1 + c2) * cmul] += x;
+                }
+            }
         }
-        arr1 += m;
     }
     return idx_ret;
 }
@@ -103,10 +98,9 @@ int main()
     if (n == 1)
     {
         printf("%d %d\n", x[0], y[0]);
-        int a, b;
-        for (a = 0; a < x[0]; a++)
+        for (int a = 0; a < x[0]; a++)
         {
-            for (b = 0; b < y[0]; b++)
+            for (int b = 0; b < y[0]; b++)
                 printf("%lld ", arr[0][a * y[0] + b]);
             printf("\n");
         }
@@ -115,12 +109,10 @@ int main()
     setOrder();
     int idx = rec_mul(0, n - 1, 0);
     printf("%d %d\n", x[idx], y[idx]);
-    int a;
-    register int b;
-    for (a = 0; a < x[idx]; a++)
+    for (int a = 0; a < x[idx]; a++)
     {
         register int AY = a * y[idx];
-        for (b = 0; b < y[idx]; b++)
+        for (register int b = 0; b < y[idx]; b++)
             printf("%lld ", arr[idx][AY + b]);
         printf("\n");
     }
