@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
+
 int n;
 int x[15], y[15];
 int orderings[5][5];
